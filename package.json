@@ -1,6 +1,6 @@
 {
   "name": "clarity-react-infinite-list",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A browser efficient infinite list for React apps that allows loading of items with differing heights and sizes.",
   "main": "dist/main.js",
   "keywords": [
