@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 const DEFAULT_BUFFER = 2000;
 
+/** Infinite List View */
 class ListView extends Component {
     constructor(props) {
         super(props);
@@ -151,6 +152,10 @@ class ListView extends Component {
         this._update();
     }
 
+    /**
+     * Changes the scrollTop to the position provided.
+     * @param {number} position - The desired scroll top position.
+     */
     scrollTo(position) {
         this.scrollableContainer.scrollTop = position;
     }

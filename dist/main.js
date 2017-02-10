@@ -2005,6 +2005,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var DEFAULT_BUFFER = 2000;
 
+/** Infinite List View */
+
 var ListView = function (_Component) {
     _inherits(ListView, _Component);
 
@@ -2185,6 +2187,12 @@ var ListView = function (_Component) {
         value: function _onScroll() {
             this._update();
         }
+
+        /**
+         * Changes the scrollTop to the position provided.
+         * @param {number} position - The desired scroll top position.
+         */
+
     }, {
         key: "scrollTo",
         value: function scrollTo(position) {
