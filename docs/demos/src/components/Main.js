@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import ListView from "../custom/ListView";
-import ListViewDataSource from "../custom/ListViewDataSource";
+import { ListView, ListViewDataSource } from "clarity-react-infinite-list";
 
 const styles = {
     container: {
