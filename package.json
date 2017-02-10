@@ -1,7 +1,23 @@
 {
-  "name": "react-infinite-list",
+  "name": "clarity-react-infinite-list",
   "version": "0.1.0",
-  "private": true,
+  "description": "A browser efficient infinite list for React apps that allows loading of items with differing heights and sizes.",
+  "keywords": [
+    "react",
+    "reactjs",
+    "react-component",
+    "list",
+    "scrolling",
+    "infinite",
+    "react-list",
+    "scroll",
+    "dynamic",
+    "height",
+    "lazy",
+    "virtual",
+    "vertical"
+  ],
+  "private": false,
   "devDependencies": {
     "react-scripts": "0.8.5"
   },
