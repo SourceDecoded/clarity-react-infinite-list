@@ -2021,12 +2021,11 @@ var ListView = function (_Component) {
             isLoading: false
         };
 
-        _this.childrenHeightCache = [];
-        _this.cachedScrollContainerRect = null;
+        _this._buffer = props.buffer || DEFAULT_BUFFER;
+        _this._childrenHeightCache = [];
+        _this._cachedScrollContainerRect = null;
 
         _this._onScroll = _this._onScroll.bind(_this);
-
-        window.listView = _this;
         return _this;
     }
 
@@ -2039,7 +2038,7 @@ var ListView = function (_Component) {
             var first = null;
             var last = 0;
 
-            this.cachedScrollContainerRect = this.scrollableContainer.getBoundingClientRect();
+            this._cachedScrollContainerRect = this.scrollableContainer.getBoundingClientRect();
 
             children.forEach(function (child, index) {
                 if (_this2._isElementInViewport(child, index)) {
@@ -2049,7 +2048,7 @@ var ListView = function (_Component) {
 
                     last = index;
                 } else {
-                    child.style.height = _this2.childrenHeightCache[index] + "px";
+                    child.style.height = _this2._childrenHeightCache[index] + "px";
                 }
             });
 
@@ -2120,12 +2119,12 @@ var ListView = function (_Component) {
         key: "_isElementInViewport",
         value: function _isElementInViewport(element, index) {
             var elementRect = element.getBoundingClientRect();
-            this.childrenHeightCache[index] = elementRect.height;
+            this._childrenHeightCache[index] = elementRect.height;
 
-            var scrollContainerRect = this.cachedScrollContainerRect;
+            var scrollContainerRect = this._cachedScrollContainerRect;
 
-            var scrollTop = scrollContainerRect.top - DEFAULT_BUFFER;
-            var scrollBottom = scrollContainerRect.bottom + DEFAULT_BUFFER;
+            var scrollTop = scrollContainerRect.top - this._buffer;
+            var scrollBottom = scrollContainerRect.bottom + this._buffer;
 
             var top = Math.max(elementRect.top, scrollTop);
             var bottom = Math.min(elementRect.bottom, scrollBottom);
@@ -2138,7 +2137,7 @@ var ListView = function (_Component) {
             var scrollContainerRect = this.scrollableContainer.getBoundingClientRect();
             var bottom = scrollContainerRect.height + this.scrollableContainer.scrollTop;
 
-            return this.scrollableContainer.scrollHeight - bottom <= DEFAULT_BUFFER;
+            return this.scrollableContainer.scrollHeight - bottom <= this._buffer;
         }
     }, {
         key: "_checkForDig",
@@ -2151,29 +2150,8 @@ var ListView = function (_Component) {
                         return { lastBatchIndex: prevState.lastBatchIndex + 1 };
                     });
                 } else {
-                    this._digBatches();
+                    this.digBatches();
                 }
-            }
-        }
-    }, {
-        key: "_digBatches",
-        value: function _digBatches() {
-            this.props.onEndReached(this.state.lastBatchIndex);
-
-            var batchCount = this.props.dataSource.getBatchCount();
-
-            this.setState(function (prevState, props) {
-                return {
-                    lastBatchIndex: batchCount - 1,
-                    isLoading: true
-                };
-            });
-        }
-    }, {
-        key: "_checkForActiveScrollBar",
-        value: function _checkForActiveScrollBar() {
-            if (this.scrollableContainer.clientHeight === this.scrollableContainer.scrollHeight) {
-                this._digBatches();
             }
         }
     }, {
@@ -2187,22 +2165,51 @@ var ListView = function (_Component) {
         value: function _onScroll() {
             this._update();
         }
+    }, {
+        key: "digBatches",
+        value: function digBatches() {
+            this.props.onEndReached(this.state.lastBatchIndex);
+
+            var batchCount = this.props.dataSource.getBatchCount();
+
+            this.setState(function (prevState, props) {
+                if (batchCount !== 0) {
+                    return {
+                        lastBatchIndex: batchCount - 1,
+                        isLoading: true
+                    };
+                }
+            });
+        }
+    }, {
+        key: "isScrollBarActive",
+        value: function isScrollBarActive() {
+            return this.scrollableContainer.clientHeight === this.scrollableContainer.scrollHeight ? false : true;
+        }
 
         /**
-         * Changes the scrollTop to the position provided.
-         * @param {number} position - The desired scroll top position.
+         * Changes the scrollTop to the topPosition provided.
+         * @param {number} topPosition - The desired scroll top position.
          */
 
     }, {
         key: "scrollTo",
-        value: function scrollTo(position) {
-            this.scrollableContainer.scrollTop = position;
+        value: function scrollTo(topPosition) {
+            this.scrollableContainer.scrollTop = topPosition;
         }
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
             this._setRenderableBatches();
-            this._checkForActiveScrollBar();
+        }
+    }, {
+        key: "componentWillReceiveProps",
+        value: function componentWillReceiveProps(nextProps) {
+            if (this.props.dataSource.getBatchCount() !== nextProps.dataSource.getBatchCount()) {
+                this.setState({
+                    isLoading: false
+                });
+            }
         }
     }, {
         key: "render",
@@ -2252,48 +2259,37 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var DEFAULT_BATCH_SIZE = 20;
 
 var ListViewDataSource = function () {
-    function ListViewDataSource(batchSize) {
+    function ListViewDataSource(batchSize, dataBlob) {
         _classCallCheck(this, ListViewDataSource);
 
-        this._dataBlob = [];
+        this._dataBlob = dataBlob || [];
         this._batchedData = [];
-        this._cachedRowCount = 0;
-        this._cachedBatchCount = 0;
         this._batchSize = batchSize || DEFAULT_BATCH_SIZE;
+        this._createBatchedData();
     }
 
     _createClass(ListViewDataSource, [{
         key: "_createBatchedData",
-        value: function _createBatchedData(newDataSource) {
+        value: function _createBatchedData() {
             var _this = this;
 
-            this._batchedData = newDataSource._dataBlob.reduce(function (acc, currentItem, currentIndex) {
+            this._batchedData = this._dataBlob.reduce(function (acc, currentItem, currentIndex) {
                 if (!(currentIndex % _this._batchSize)) {
-                    acc.push(newDataSource._dataBlob.slice(currentIndex, currentIndex + _this._batchSize));
+                    acc.push(_this._dataBlob.slice(currentIndex, currentIndex + _this._batchSize));
                 }
                 return acc;
             }, []);
-
-            this._cachedBatchCount = this._batchedData.length;
         }
     }, {
         key: "cloneWithRows",
         value: function cloneWithRows(dataBlob) {
-            var newDataSource = new ListViewDataSource(this._batchSize);
-            newDataSource._dataBlob = this._dataBlob.concat(dataBlob);
-            newDataSource._cachedRowCount = newDataSource._dataBlob.length;
-
-            this._createBatchedData(newDataSource);
-
-            newDataSource._batchedData = this._batchedData;
-            newDataSource._cachedBatchCount = newDataSource._batchedData.length;
-
+            var newDataSource = new ListViewDataSource(this._batchSize, this._dataBlob.concat(dataBlob));
             return newDataSource;
         }
     }, {
         key: "getBatchCount",
         value: function getBatchCount() {
-            return this._cachedBatchCount;
+            return this._batchedData.length;
         }
     }, {
         key: "getBatchData",
