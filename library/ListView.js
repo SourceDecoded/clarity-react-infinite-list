@@ -13,12 +13,11 @@ class ListView extends Component {
             isLoading: false
         };
 
-        this.childrenHeightCache = [];
-        this.cachedScrollContainerRect = null;
+        this._buffer = props.buffer || DEFAULT_BUFFER;
+        this._childrenHeightCache = [];
+        this._cachedScrollContainerRect = null;
 
         this._onScroll = this._onScroll.bind(this);
-
-        window.listView = this;
     }
 
     _setRenderableBatches() {
@@ -26,7 +25,7 @@ class ListView extends Component {
         var first = null;
         var last = 0;
 
-        this.cachedScrollContainerRect = this.scrollableContainer.getBoundingClientRect();
+        this._cachedScrollContainerRect = this.scrollableContainer.getBoundingClientRect();
 
         children.forEach((child, index) => {
             if (this._isElementInViewport(child, index)) {
@@ -36,7 +35,7 @@ class ListView extends Component {
 
                 last = index;
             } else {
-                child.style.height = this.childrenHeightCache[index] + "px";
+                child.style.height = this._childrenHeightCache[index] + "px";
             }
         });
 
@@ -90,12 +89,12 @@ class ListView extends Component {
 
     _isElementInViewport(element, index) {
         var elementRect = element.getBoundingClientRect();
-        this.childrenHeightCache[index] = elementRect.height;
+        this._childrenHeightCache[index] = elementRect.height;
 
-        var scrollContainerRect = this.cachedScrollContainerRect;
+        var scrollContainerRect = this._cachedScrollContainerRect;
 
-        var scrollTop = scrollContainerRect.top - DEFAULT_BUFFER;
-        var scrollBottom = scrollContainerRect.bottom + DEFAULT_BUFFER;
+        var scrollTop = scrollContainerRect.top - this._buffer;
+        var scrollBottom = scrollContainerRect.bottom + this._buffer;
 
         var top = Math.max(elementRect.top, scrollTop);
         var bottom = Math.min(elementRect.bottom, scrollBottom);
@@ -107,7 +106,7 @@ class ListView extends Component {
         var scrollContainerRect = this.scrollableContainer.getBoundingClientRect();
         var bottom = scrollContainerRect.height + this.scrollableContainer.scrollTop;
 
-        return this.scrollableContainer.scrollHeight - bottom <= DEFAULT_BUFFER;
+        return this.scrollableContainer.scrollHeight - bottom <= this._buffer;
     }
 
     _checkForDig() {
@@ -116,30 +115,11 @@ class ListView extends Component {
 
             if ((batchCount - 1) > this.state.lastBatchIndex) {
                 this.setState((prevState, props) => {
-                    return { lastBatchIndex: (prevState.lastBatchIndex + 1)};
+                    return { lastBatchIndex: (prevState.lastBatchIndex + 1) };
                 });
             } else {
-                this._digBatches();
+                this.digBatches();
             }
-        }
-    }
-
-    _digBatches() {
-        this.props.onEndReached(this.state.lastBatchIndex);
-
-        let batchCount = this.props.dataSource.getBatchCount();
-
-        this.setState((prevState, props) => {
-            return {
-                lastBatchIndex: (batchCount - 1),
-                isLoading: true
-            };
-        });
-    }
-
-    _checkForActiveScrollBar() {
-        if (this.scrollableContainer.clientHeight === this.scrollableContainer.scrollHeight) {
-            this._digBatches()
         }
     }
 
@@ -152,17 +132,43 @@ class ListView extends Component {
         this._update();
     }
 
+    digBatches() {
+        this.props.onEndReached(this.state.lastBatchIndex);
+
+        let batchCount = this.props.dataSource.getBatchCount();
+
+        this.setState((prevState, props) => {
+            if (batchCount !== 0) {
+                return {
+                    lastBatchIndex: (batchCount - 1),
+                    isLoading: true
+                };
+            }
+        });
+    }
+
+    isScrollBarActive() {
+        return this.scrollableContainer.clientHeight === this.scrollableContainer.scrollHeight ? false : true;
+    }
+
     /**
-     * Changes the scrollTop to the position provided.
-     * @param {number} position - The desired scroll top position.
+     * Changes the scrollTop to the topPosition provided.
+     * @param {number} topPosition - The desired scroll top position.
      */
-    scrollTo(position) {
-        this.scrollableContainer.scrollTop = position;
+    scrollTo(topPosition) {
+        this.scrollableContainer.scrollTop = topPosition;
     }
 
     componentDidMount() {
         this._setRenderableBatches();
-        this._checkForActiveScrollBar();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.dataSource.getBatchCount() !== nextProps.dataSource.getBatchCount() ) {
+            this.setState({
+                isLoading: false
+            });
+        }
     }
 
     render() {

@@ -8,7 +8,11 @@
   "dependencies": {
     "clarity-react-infinite-list": "^0.1.1",
     "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-dom": "^15.4.2",
+    "react-redux": "^5.0.2",
+    "redux": "^3.6.0",
+    "redux-observable": "^0.13.0",
+    "rxjs": "^5.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -16,5 +20,5 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "homepage":"https://sourcedecoded.github.io/clarity-react-infinite-list/demos/build/"
+  "homepage": "https://sourcedecoded.github.io/clarity-react-infinite-list/demos/build/"
 }

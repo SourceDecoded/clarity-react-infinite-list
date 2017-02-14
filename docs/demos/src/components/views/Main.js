@@ -1,5 +1,8 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { getUsersBatch, setFetchingUsersStatus } from "../../actions";
 import { ListView, ListViewDataSource } from "clarity-react-infinite-list";
+import ListItem from "../layouts/ListItem";
 
 const styles = {
     container: {
@@ -9,19 +12,14 @@ const styles = {
         width: "100%",
         height: "100%"
     },
-    rowContainer: {
-        textAlign: "center",
-        height: "100px",
-        width: "100%",
-        color: "#757575",
-        backgroundColor: "#fff",
-        borderBottom: "1px solid #e9e9e9",
-        overflow: "hidden"
-    },
     listView: {
         height: "100%",
         width: "100%",
         overflowY: "scroll"
+    },
+    loading: {
+        textAlign: "center",
+        paddingBottom: "16px"
     }
 };
 
@@ -30,10 +28,9 @@ class Main extends Component {
         super(props);
 
         this.state = {
-            dataSource: new ListViewDataSource()
+            dataSource: new ListViewDataSource(30),
+            lastUserId: 0
         };
-
-        window.main = this;
 
         this._renderRow = this._renderRow.bind(this);
         this._onEndReached = this._onEndReached.bind(this);
@@ -42,43 +39,35 @@ class Main extends Component {
 
     _renderRow(rowData, rowId) {
         return (
-            <div style={Object.assign({}, styles.rowContainer, { height: rowData.height })} key={rowId}>
-                <div>{`Item ${rowId}`}</div>
-                <div>{rowData.onEndReach}</div>
-            </div>
+            <ListItem key={rowId} rowData={rowData} rowId={rowId} />
         );
     }
 
     _onEndReached() {
-        let data = [];
-
-        for (let i = 0; i < 20; i++) {
-            const randNum = Math.floor(Math.random() * 1000) + 1;
-            data.push({ height: randNum, onEndReach: "DUG" });
+        if (!this.props.isFetchingUsers) {
+            this.props.setFetchingUsersStatus(true);
+            this.props.getUsersBatch(this.state.lastUserId);
         }
-
-        this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(data)
-        });
     }
 
     _loadingComponent() {
         return (
-            <div>Loading...</div>
+            <div style={styles.loading}>Loading...</div>
         );
     }
 
     componentWillMount() {
-        let data = [];
+        this.props.setFetchingUsersStatus(true);
+        this.props.getUsersBatch(this.state.lastUserId);
+    }
 
-        for (let i = 0; i < 20; i++) {
-            const randNum = Math.floor(Math.random() * 1000) + 1;
-            data.push({ height: randNum });
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.users[nextProps.users.length - 1] && this.state.lastUserId !== nextProps.users[nextProps.users.length - 1].id) {
+            this.setState({
+                dataSource: this.state.dataSource.cloneWithRows(nextProps.users),
+                lastUserId: nextProps.users[nextProps.users.length - 1].id,
+            });
         }
-
-        this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(data)
-        });
     }
 
     render() {
@@ -89,10 +78,24 @@ class Main extends Component {
                     renderRow={this._renderRow}
                     onEndReached={this._onEndReached}
                     loadingComponent={this._loadingComponent}
+                    buffer={5000}
                     ref={listView => this.listView = listView} />
             </div>
         );
     }
 }
 
-export default Main;
+
+const mapStateToProps = (state) => {
+    return {
+        users: state.users,
+        isFetchingUsers: state.isFetchingUsers
+    };
+};
+
+const mapDispatchToProps = {
+    getUsersBatch,
+    setFetchingUsersStatus
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
