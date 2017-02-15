@@ -96,7 +96,7 @@ class Main extends Component {
                     renderRow={this._renderRow}
                     onEndReached={this._onEndReached}
                     loadingComponent={this._loadingComponent}
-                    buffer={5000}
+                    onEndReachedThreshold={5000}
                     ref={listView => this.listView = listView} />
             </div>
         );
