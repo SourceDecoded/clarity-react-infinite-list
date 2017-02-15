@@ -3,6 +3,7 @@
   "version": "0.1.4",
   "description": "A browser efficient infinite list for React apps that allows loading of items with differing heights and sizes.",
   "main": "dist/main.js",
+  "license": "MIT",
   "keywords": [
     "react",
     "reactjs",
@@ -18,6 +19,10 @@
     "virtual",
     "vertical"
   ],
+  "repository": {
+    "type": "git",
+    "url": "SourceDecoded/clarity-react-infinite-list"
+  },
   "private": false,
   "devDependencies": {
     "babel-core": "^6.22.1",

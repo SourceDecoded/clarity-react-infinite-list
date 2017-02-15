@@ -12,9 +12,24 @@ const styles = {
         width: "100%",
         height: "100%"
     },
+    header: {
+        boxShadow: "0 1px 8px rgba(0,0,0,.3)",
+        fontSize: "18px",
+        textAlign: "center",
+        height: "80px",
+        lineHeight: "80px",
+        color: "#f2f2f2",
+        backgroundColor: "#1e88e5",
+        position: "relative",
+        zIndex: "2"
+    },
     listView: {
-        height: "100%",
-        width: "100%",
+        paddingTop: "16px",
+        position: "absolute",
+        top: "80px",
+        bottom: "0",
+        left: "0",
+        right: "0",
         overflowY: "scroll"
     },
     loading: {
@@ -73,6 +88,9 @@ class Main extends Component {
     render() {
         return (
             <div style={styles.container}>
+                <div style={styles.header}>
+                    Clarity React Infinite Scroll Example
+                </div>
                 <ListView style={styles.listView}
                     dataSource={this.state.dataSource}
                     renderRow={this._renderRow}

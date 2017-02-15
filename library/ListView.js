@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-const DEFAULT_BUFFER = 2000;
+const DEFAULT_ON_END_REACHED_THRESHOLD= 2000;
 
 /** Infinite List View */
 class ListView extends Component {
@@ -13,7 +13,7 @@ class ListView extends Component {
             isLoading: false
         };
 
-        this._buffer = props.buffer || DEFAULT_BUFFER;
+        this._onEndReachedThreshold = props.onEndReachedThreshold || DEFAULT_ON_END_REACHED_THRESHOLD;
         this._childrenHeightCache = [];
         this._cachedScrollContainerRect = null;
 
@@ -93,8 +93,8 @@ class ListView extends Component {
 
         var scrollContainerRect = this._cachedScrollContainerRect;
 
-        var scrollTop = scrollContainerRect.top - this._buffer;
-        var scrollBottom = scrollContainerRect.bottom + this._buffer;
+        var scrollTop = scrollContainerRect.top - this._onEndReachedThreshold;
+        var scrollBottom = scrollContainerRect.bottom + this._onEndReachedThreshold;
 
         var top = Math.max(elementRect.top, scrollTop);
         var bottom = Math.min(elementRect.bottom, scrollBottom);
@@ -102,15 +102,15 @@ class ListView extends Component {
         return top < bottom;
     }
 
-    _isWithInBottomBuffer() {
+    _isWithinOnEndReachedThreshold() {
         var scrollContainerRect = this.scrollableContainer.getBoundingClientRect();
         var bottom = scrollContainerRect.height + this.scrollableContainer.scrollTop;
 
-        return this.scrollableContainer.scrollHeight - bottom <= this._buffer;
+        return this.scrollableContainer.scrollHeight - bottom <= this._onEndReachedThreshold;
     }
 
     _checkForDig() {
-        if (this._isWithInBottomBuffer()) {
+        if (this._isWithinOnEndReachedThreshold()) {
             let batchCount = this.props.dataSource.getBatchCount();
 
             if ((batchCount - 1) > this.state.lastBatchIndex) {
@@ -132,22 +132,30 @@ class ListView extends Component {
         this._update();
     }
 
+    /**
+     * Manually dig batches from the props.onEndReached function.
+     */
     digBatches() {
-        this.props.onEndReached(this.state.lastBatchIndex);
+        if (this.props.onEndReached) {
+            this.props.onEndReached(this.state.lastBatchIndex);
 
-        let batchCount = this.props.dataSource.getBatchCount();
+            let batchCount = this.props.dataSource.getBatchCount();
 
-        this.setState((prevState, props) => {
-            if (batchCount !== 0) {
-                return {
-                    lastBatchIndex: (batchCount - 1),
-                    isLoading: true
-                };
-            }
-        });
+            this.setState((prevState, props) => {
+                if (batchCount !== 0) {
+                    return {
+                        lastBatchIndex: (batchCount - 1),
+                        isLoading: true
+                    };
+                }
+            });
+        }
     }
 
-    isScrollBarActive() {
+    /**
+     * Checks if content inside of scrollbar is long enough to have an active scrollbar.
+     */
+    isScrollbarActive() {
         return this.scrollableContainer.clientHeight === this.scrollableContainer.scrollHeight ? false : true;
     }
 
@@ -164,7 +172,7 @@ class ListView extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.dataSource.getBatchCount() !== nextProps.dataSource.getBatchCount() ) {
+        if (this.props.dataSource.getBatchCount() !== nextProps.dataSource.getBatchCount()) {
             this.setState({
                 isLoading: false
             });
@@ -173,7 +181,7 @@ class ListView extends Component {
 
     render() {
         let batchedComponents = this._getRenderableBatches();
-        let loadingComponent = this.state.isLoading ? this.props.loadingComponent() : null;
+        let loadingComponent = this.state.isLoading && this.props.loadingComponent ? this.props.loadingComponent() : null;
 
         return (
             <div style={this.props.style} ref={div => this.scrollableContainer = div} onScroll={this._onScroll}>
