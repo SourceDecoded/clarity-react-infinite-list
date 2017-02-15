@@ -1,12 +1,13 @@
 # clarity-react-infinite-list
-A browser efficient infinite list for React apps that allows loading of items with differing heights and sizes.
-The minimal API is to create a `ListViewDataSource` from `clarity-react-infinite-list`, populate it with an array of data, and add a `ListView` component
-with that data source and a `renderRow` callback which takes an item from the data source and returns a renderable component.
 
 ![NPM version](https://img.shields.io/npm/v/clarity-react-infinite-list.svg?style=flat)
 ![NPM license](https://img.shields.io/npm/l/clarity-react-infinite-list.svg?style=flat)
 ![NPM total downloads](https://img.shields.io/npm/dt/clarity-react-infinite-list.svg?style=flat)
 ![NPM monthly downloads](https://img.shields.io/npm/dm/clarity-react-infinite-list.svg?style=flat)
+
+A browser efficient infinite list for React apps that allows loading of items with differing heights and sizes.
+The minimal API is to create a `ListViewDataSource` from `clarity-react-infinite-list`, populate it with an array of data, and add a `ListView` component
+with that data source and a `renderRow` callback which takes an item from the data source and returns a renderable component.
 
 ## Install
 ```bash
