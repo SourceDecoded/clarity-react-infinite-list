@@ -3,7 +3,7 @@ import React from "react";
 const styles = {
     container: {
         padding: "16px",
-        width: "400px",
+        maxWidth: "400px",
         color: "#757575",
         margin: "0 auto 16px auto",
         borderRadius: "3px",

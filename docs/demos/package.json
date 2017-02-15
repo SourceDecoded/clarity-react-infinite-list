@@ -1,7 +1,7 @@
 {
   "name": "demos",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "devDependencies": {
     "react-scripts": "0.8.5"
   },
