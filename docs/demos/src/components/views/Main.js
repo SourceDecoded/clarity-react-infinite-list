@@ -21,7 +21,10 @@ const styles = {
         color: "#f2f2f2",
         backgroundColor: "#1e88e5",
         position: "relative",
-        zIndex: "2"
+        zIndex: "2",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
     },
     listView: {
         paddingTop: "16px",
@@ -30,7 +33,8 @@ const styles = {
         bottom: "0",
         left: "0",
         right: "0",
-        overflowY: "scroll"
+        overflowY: "scroll",
+        WebkitOverflowScrolling: "touch"
     },
     loading: {
         textAlign: "center",
