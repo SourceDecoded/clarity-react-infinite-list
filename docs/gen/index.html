@@ -86,8 +86,133 @@
 
 
     <section class="readme-section">
-        <article><h1>Getting Started with Clarity React Infinite List</h1><p>Install Clarity React Infinite List with npm.</p>
-<pre class="prettyprint source lang-bash"><code>npm install clarity-react-infinite-list</code></pre><h2>Examples</h2><p><a href="https://sourcedecoded.github.io/clarity-react-infinite-list/demos/build/index.html">Basic</a></p></article>
+        <article><h1>clarity-react-infinite-list</h1><p>A browser efficient infinite list for React apps that allows loading of items with differing heights and sizes.
+The minimal API is to create a <code>ListViewDataSource</code> from <code>clarity-react-infinite-list</code>, populate it with an array of data, and add a <code>ListView</code> component
+with that data source and a <code>renderRow</code> callback which takes an item from the data source and returns a renderable component.</p>
+<p><img src="https://img.shields.io/npm/v/clarity-react-infinite-list.svg?style=flat" alt="NPM version">
+<img src="https://img.shields.io/npm/l/clarity-react-infinite-list.svg?style=flat" alt="NPM license">
+<img src="https://img.shields.io/npm/dt/clarity-react-infinite-list.svg?style=flat" alt="NPM total downloads">
+<img src="https://img.shields.io/npm/dm/clarity-react-infinite-list.svg?style=flat" alt="NPM monthly downloads"></p>
+<h2>Install</h2><pre class="prettyprint source lang-bash"><code>npm install clarity-react-infinite-list</code></pre><h2>Dependencies</h2><h3>Version 15.x.x</h3><ul>
+<li><code>react</code></li>
+<li><code>react-dom</code></li>
+</ul>
+<h2>Features</h2><ul>
+<li>Lazy load and fetch data from API requests in batches.</li>
+<li>Infinite number of items and batches</li>
+<li>Items can have dynamic heights and sizes, that do not have to be declared before hand.</li>
+<li>Add in a custom loading component.</li>
+</ul>
+<h2>Demos</h2><p><a href="https://sourcedecoded.github.io/clarity-react-infinite-list/demos/build/index.html">Github API Data</a></p>
+<h2>Minimal Example</h2><pre class="prettyprint source lang-js"><code>import React, { Component } from &quot;react&quot;;
+import { connect } from &quot;react-redux&quot;;
+import { getUsersBatch, setFetchingUsersStatus } from &quot;../../actions&quot;;
+import { ListView, ListViewDataSource } from &quot;clarity-react-infinite-list&quot;;
+import ListItem from &quot;../layouts/ListItem&quot;;
+
+const styles = {...};
+
+class Main extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            dataSource: new ListViewDataSource(30),
+            lastUserId: 0
+        };
+
+        this._renderRow = this._renderRow.bind(this);
+        this._onEndReached = this._onEndReached.bind(this);
+        this._loadingComponent = this._loadingComponent.bind(this);
+    }
+
+    _renderRow(rowData, rowId) {
+        return (
+            &lt;ListItem key={rowId} rowData={rowData} rowId={rowId} />
+        );
+    }
+
+    _onEndReached() {
+        if (!this.props.isFetchingUsers) {
+            this.props.setFetchingUsersStatus(true);
+            this.props.getUsersBatch(this.state.lastUserId);
+        }
+    }
+
+    _loadingComponent() {
+        return (
+            &lt;div style={styles.loading}>Loading...&lt;/div>
+        );
+    }
+
+    componentWillMount() {
+        this.props.setFetchingUsersStatus(true);
+        this.props.getUsersBatch(this.state.lastUserId);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.users[nextProps.users.length - 1] && this.state.lastUserId !== nextProps.users[nextProps.users.length - 1].id) {
+            this.setState({
+                dataSource: this.state.dataSource.cloneWithRows(nextProps.users),
+                lastUserId: nextProps.users[nextProps.users.length - 1].id,
+            });
+        }
+    }
+
+    render() {
+        return (
+            &lt;div style={styles.container}>
+                &lt;div style={styles.header}>
+                    Clarity React Infinite Scroll Example
+                &lt;/div>
+                &lt;ListView style={styles.listView}
+                    dataSource={this.state.dataSource}
+                    renderRow={this._renderRow}
+                    onEndReached={this._onEndReached}
+                    loadingComponent={this._loadingComponent}
+                    onEndReachedThreshold={5000}
+                    ref={listView => this.listView = listView} />
+            &lt;/div>
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        users: state.users,
+        isFetchingUsers: state.isFetchingUsers
+    };
+};
+
+const mapDispatchToProps = {
+    getUsersBatch,
+    setFetchingUsersStatus
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);</code></pre><h2>Props</h2><h4><code>dataSource</code> ListViewDataSource</h4><ul>
+<li>An instance of <code>ListViewDataSource</code>to use.</li>
+</ul>
+<h4><code>renderRow</code> function(rowData, rowId) =&gt; renderableComponent</h4><ul>
+<li>Takes a data entry from the data source and its id and should return a renderable component to be rendered as the row.</li>
+</ul>
+<h4><code>onEndReached</code> function()</h4><ul>
+<li>Called when the list has been scrolled to within the <code>onEndReachedThreshold</code> of the bottom.</li>
+</ul>
+<h4><code>loadingComponent</code> function() =&gt; renderableComponent</h4><ul>
+<li>Should return a renderable component, to be displayed at bottom of list when loading new batches.</li>
+</ul>
+<h4><code>onEndReachedThreshold</code> number</h4><ul>
+<li>Threshold in pixels for calling <code>onEndReached</code></li>
+</ul>
+<h2>Methods</h2><h4><code>scrollTo(topPosition: number)</code></h4><ul>
+<li>Scrolls to the given topPosition of the <code>ListView</code>.</li>
+</ul>
+<h4><code>isScrollbarActive()</code></h4><ul>
+<li>Returns a boolean of whether or not the <code>ListView</code> has enough content to have an active vertical scrollbar.</li>
+</ul>
+<h4><code>digBatches()</code></h4><ul>
+<li>Manually dig batches from the props.onEndReached function.</li>
+</ul></article>
     </section>
 
 
@@ -133,7 +258,7 @@
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on February 14th 2017, 3:02:14 pm
+		on February 15th 2017, 11:36:03 am
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

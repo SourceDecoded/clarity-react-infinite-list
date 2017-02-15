@@ -2003,7 +2003,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var DEFAULT_BUFFER = 2000;
+var DEFAULT_ON_END_REACHED_THRESHOLD = 2000;
 
 /** Infinite List View */
 
@@ -2021,7 +2021,7 @@ var ListView = function (_Component) {
             isLoading: false
         };
 
-        _this._buffer = props.buffer || DEFAULT_BUFFER;
+        _this._onEndReachedThreshold = props.onEndReachedThreshold || DEFAULT_ON_END_REACHED_THRESHOLD;
         _this._childrenHeightCache = [];
         _this._cachedScrollContainerRect = null;
 
@@ -2123,8 +2123,8 @@ var ListView = function (_Component) {
 
             var scrollContainerRect = this._cachedScrollContainerRect;
 
-            var scrollTop = scrollContainerRect.top - this._buffer;
-            var scrollBottom = scrollContainerRect.bottom + this._buffer;
+            var scrollTop = scrollContainerRect.top - this._onEndReachedThreshold;
+            var scrollBottom = scrollContainerRect.bottom + this._onEndReachedThreshold;
 
             var top = Math.max(elementRect.top, scrollTop);
             var bottom = Math.min(elementRect.bottom, scrollBottom);
@@ -2132,17 +2132,17 @@ var ListView = function (_Component) {
             return top < bottom;
         }
     }, {
-        key: "_isWithInBottomBuffer",
-        value: function _isWithInBottomBuffer() {
+        key: "_isWithinOnEndReachedThreshold",
+        value: function _isWithinOnEndReachedThreshold() {
             var scrollContainerRect = this.scrollableContainer.getBoundingClientRect();
             var bottom = scrollContainerRect.height + this.scrollableContainer.scrollTop;
 
-            return this.scrollableContainer.scrollHeight - bottom <= this._buffer;
+            return this.scrollableContainer.scrollHeight - bottom <= this._onEndReachedThreshold;
         }
     }, {
         key: "_checkForDig",
         value: function _checkForDig() {
-            if (this._isWithInBottomBuffer()) {
+            if (this._isWithinOnEndReachedThreshold()) {
                 var batchCount = this.props.dataSource.getBatchCount();
 
                 if (batchCount - 1 > this.state.lastBatchIndex) {
@@ -2165,25 +2165,41 @@ var ListView = function (_Component) {
         value: function _onScroll() {
             this._update();
         }
+
+        /**
+         * Manually dig batches from the props.onEndReached function.
+         */
+
     }, {
         key: "digBatches",
         value: function digBatches() {
-            this.props.onEndReached(this.state.lastBatchIndex);
+            var _this4 = this;
 
-            var batchCount = this.props.dataSource.getBatchCount();
+            if (this.props.onEndReached) {
+                (function () {
+                    _this4.props.onEndReached(_this4.state.lastBatchIndex);
 
-            this.setState(function (prevState, props) {
-                if (batchCount !== 0) {
-                    return {
-                        lastBatchIndex: batchCount - 1,
-                        isLoading: true
-                    };
-                }
-            });
+                    var batchCount = _this4.props.dataSource.getBatchCount();
+
+                    _this4.setState(function (prevState, props) {
+                        if (batchCount !== 0) {
+                            return {
+                                lastBatchIndex: batchCount - 1,
+                                isLoading: true
+                            };
+                        }
+                    });
+                })();
+            }
         }
+
+        /**
+         * Checks if content inside of scrollbar is long enough to have an active scrollbar.
+         */
+
     }, {
-        key: "isScrollBarActive",
-        value: function isScrollBarActive() {
+        key: "isScrollbarActive",
+        value: function isScrollbarActive() {
             return this.scrollableContainer.clientHeight === this.scrollableContainer.scrollHeight ? false : true;
         }
 
@@ -2214,20 +2230,20 @@ var ListView = function (_Component) {
     }, {
         key: "render",
         value: function render() {
-            var _this4 = this;
+            var _this5 = this;
 
             var batchedComponents = this._getRenderableBatches();
-            var loadingComponent = this.state.isLoading ? this.props.loadingComponent() : null;
+            var loadingComponent = this.state.isLoading && this.props.loadingComponent ? this.props.loadingComponent() : null;
 
             return _react2.default.createElement(
                 "div",
                 { style: this.props.style, ref: function ref(div) {
-                        return _this4.scrollableContainer = div;
+                        return _this5.scrollableContainer = div;
                     }, onScroll: this._onScroll },
                 _react2.default.createElement(
                     "div",
                     { ref: function ref(div) {
-                            return _this4.batchedComponentsContainer = div;
+                            return _this5.batchedComponentsContainer = div;
                         } },
                     batchedComponents
                 ),
