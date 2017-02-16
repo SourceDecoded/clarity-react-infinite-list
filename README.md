@@ -14,10 +14,8 @@ with that data source and a `renderRow` callback which takes an item from the da
 npm install clarity-react-infinite-list
 ```
 
-## Dependencies
-### Version 15.x.x
-* `react`
-* `react-dom`
+## Demos
+[Github API Data](https://sourcedecoded.github.io/clarity-react-infinite-list/demos/build/index.html)
 
 ## Features
 * Lazy load and fetch data from API requests in batches.
@@ -25,8 +23,10 @@ npm install clarity-react-infinite-list
 * Items can have dynamic heights and sizes, that do not have to be declared before hand.
 * Add in a custom loading component.
 
-## Demos
-[Github API Data](https://sourcedecoded.github.io/clarity-react-infinite-list/demos/build/index.html)
+## Dependencies
+### Version 15.x.x
+* `react`
+* `react-dom`
 
 ## Minimal Example
 ```js
