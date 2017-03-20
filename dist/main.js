@@ -2297,6 +2297,17 @@ var ListViewDataSource = function () {
             }, []);
         }
     }, {
+        key: "appendRows",
+        value: function appendRows(dataBlob) {
+            this.cloneWithRows(dataBlob);
+        }
+    }, {
+        key: "prependRows",
+        value: function prependRows(dataBlob) {
+            var newDataSource = new ListViewDataSource(this._batchSize, this._dataBlob.unshift(dataBlob));
+            return newDataSource;
+        }
+    }, {
         key: "cloneWithRows",
         value: function cloneWithRows(dataBlob) {
             var newDataSource = new ListViewDataSource(this._batchSize, this._dataBlob.concat(dataBlob));

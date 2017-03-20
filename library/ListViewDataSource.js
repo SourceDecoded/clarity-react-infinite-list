@@ -17,6 +17,15 @@ class ListViewDataSource {
         }, []);
     }
 
+    appendRows(dataBlob) {
+        this.cloneWithRows(dataBlob);
+    }
+
+    prependRows(dataBlob) {
+        let newDataSource = new ListViewDataSource(this._batchSize, this._dataBlob.unshift(dataBlob));
+        return newDataSource;
+    }
+
     cloneWithRows(dataBlob) {
         let newDataSource = new ListViewDataSource(this._batchSize, this._dataBlob.concat(dataBlob));
         return newDataSource;
