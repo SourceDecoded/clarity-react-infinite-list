@@ -2304,7 +2304,9 @@ var ListViewDataSource = function () {
     }, {
         key: "prependRows",
         value: function prependRows(dataBlob) {
-            var newDataSource = new ListViewDataSource(this._batchSize, this._dataBlob.unshift(dataBlob));
+            this._dataBlob.unshift(dataBlob);
+
+            var newDataSource = new ListViewDataSource(this._batchSize, this._dataBlob);
             return newDataSource;
         }
     }, {

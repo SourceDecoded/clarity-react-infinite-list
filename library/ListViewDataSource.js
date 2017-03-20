@@ -22,7 +22,9 @@ class ListViewDataSource {
     }
 
     prependRows(dataBlob) {
-        let newDataSource = new ListViewDataSource(this._batchSize, this._dataBlob.unshift(dataBlob));
+        this._dataBlob.unshift(dataBlob);
+
+        let newDataSource = new ListViewDataSource(this._batchSize, this._dataBlob);
         return newDataSource;
     }
 
