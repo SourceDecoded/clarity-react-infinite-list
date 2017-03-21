@@ -18,7 +18,7 @@ class ListViewDataSource {
     }
 
     appendRows(dataBlob) {
-        this.cloneWithRows.bind(this, dataBlob);
+        return this.cloneWithRows(dataBlob);
     }
 
     prependRows(dataBlob) {
