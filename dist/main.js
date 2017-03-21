@@ -2299,7 +2299,7 @@ var ListViewDataSource = function () {
     }, {
         key: "appendRows",
         value: function appendRows(dataBlob) {
-            this.cloneWithRows.bind(this, dataBlob);
+            return this.cloneWithRows(dataBlob);
         }
     }, {
         key: "prependRows",
