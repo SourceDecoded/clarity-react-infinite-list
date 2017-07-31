@@ -1,47 +1,47 @@
 {
-  "name": "clarity-react-infinite-list",
-  "version": "1.0.5",
-  "description": "A browser efficient infinite list for React apps that allows loading of items with differing heights and sizes.",
-  "main": "dist/main.js",
-  "license": "MIT",
-  "keywords": [
-    "react",
-    "reactjs",
-    "react-component",
-    "list",
-    "scrolling",
-    "infinite",
-    "react-list",
-    "scroll",
-    "dynamic",
-    "height",
-    "lazy",
-    "virtual",
-    "vertical"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "SourceDecoded/clarity-react-infinite-list"
-  },
-  "private": false,
-  "devDependencies": {
-    "babel-core": "^6.22.1",
-    "babel-loader": "^6.2.10",
-    "babel-preset-es2015": "^6.22.0",
-    "babel-preset-react": "^6.22.0",
-    "gulp": "^3.9.1",
-    "gulp-jsdoc3": "^1.0.1",
-    "react-scripts": "0.8.5",
-    "webpack": "^2.2.1"
-  },
-  "dependencies": {
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
-  }
+    "name": "clarity-react-infinite-list",
+    "version": "1.0.6",
+    "description": "A browser efficient infinite list for React apps that allows loading of items with differing heights and sizes.",
+    "main": "dist/main.js",
+    "license": "MIT",
+    "keywords": [
+        "react",
+        "reactjs",
+        "react-component",
+        "list",
+        "scrolling",
+        "infinite",
+        "react-list",
+        "scroll",
+        "dynamic",
+        "height",
+        "lazy",
+        "virtual",
+        "vertical"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "SourceDecoded/clarity-react-infinite-list"
+    },
+    "private": false,
+    "devDependencies": {
+        "babel-core": "^6.22.1",
+        "babel-loader": "^6.2.10",
+        "babel-preset-es2015": "^6.22.0",
+        "babel-preset-react": "^6.22.0",
+        "gulp": "^3.9.1",
+        "gulp-jsdoc3": "^1.0.1",
+        "react-scripts": "0.8.5",
+        "webpack": "^2.2.1"
+    },
+    "dependencies": {
+        "react": "^15.4.2",
+        "react-dom": "^15.4.2"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test --env=jsdom",
+        "eject": "react-scripts eject"
+    }
 }

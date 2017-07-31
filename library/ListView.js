@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-const DEFAULT_ON_END_REACHED_THRESHOLD= 2000;
+const DEFAULT_ON_END_REACHED_THRESHOLD = 2000;
 
 /** Infinite List View */
 class ListView extends Component {
@@ -41,7 +41,7 @@ class ListView extends Component {
 
         first = first == null ? 0 : first;
 
-        this.setState((prevState) => {
+        this.setState(prevState => {
             if (prevState.firstBatchIndex !== first || prevState.lastBatchIndex !== last) {
                 return {
                     firstBatchIndex: first,
@@ -52,8 +52,8 @@ class ListView extends Component {
     }
 
     _getRenderableBatches() {
-        let {firstBatchIndex, lastBatchIndex} = this.state;
-        let {dataSource, renderRow} = this.props;
+        let { firstBatchIndex, lastBatchIndex } = this.state;
+        let { dataSource, renderRow } = this.props;
         let numberOfBatches = dataSource.getBatchCount();
         let batches = [];
 
@@ -62,9 +62,9 @@ class ListView extends Component {
                 let batchIndex = i;
                 let batch = dataSource.getBatchData(batchIndex);
                 let batchContainerElement = (
-                    <div ref={div => this["batchContainer" + batchIndex] = div} key={batchIndex}>
+                    <div ref={div => (this["batchContainer" + batchIndex] = div)} key={batchIndex}>
                         {batch.map((item, itemIndex) => {
-                            return renderRow(item, batchIndex + "_" + itemIndex)
+                            return renderRow(item, batchIndex + "_" + itemIndex);
                         })}
                     </div>
                 );
@@ -76,7 +76,7 @@ class ListView extends Component {
                 if (emptyBatchContainer) {
                     let emptyContainerHeight = this["batchContainer" + i].style.height;
                     let emptyBatchContainerElement = (
-                        <div style={{ height: emptyContainerHeight }} ref={div => this["batchContainer" + i] = div} key={i}></div>
+                        <div style={{ height: emptyContainerHeight }} ref={div => (this["batchContainer" + i] = div)} key={i} />
                     );
 
                     batches.push(emptyBatchContainerElement);
@@ -113,23 +113,17 @@ class ListView extends Component {
         if (this._isWithinOnEndReachedThreshold()) {
             let batchCount = this.props.dataSource.getBatchCount();
 
-            if ((batchCount - 1) > this.state.lastBatchIndex) {
+            if (batchCount - 1 > this.state.lastBatchIndex) {
                 this.setState((prevState, props) => {
-                    return { lastBatchIndex: (prevState.lastBatchIndex + 1) };
+                    return { lastBatchIndex: prevState.lastBatchIndex + 1 };
                 });
             } else {
                 this.digBatches();
             }
         }
     }
-
-    _update() {
-        this._setRenderableBatches();
-        this._checkForDig();
-    }
-
     _onScroll() {
-        this._update();
+        this.update();
     }
 
     /**
@@ -144,7 +138,7 @@ class ListView extends Component {
             this.setState((prevState, props) => {
                 if (batchCount !== 0) {
                     return {
-                        lastBatchIndex: (batchCount - 1),
+                        lastBatchIndex: batchCount - 1,
                         isLoading: true
                     };
                 }
@@ -167,6 +161,11 @@ class ListView extends Component {
         this.scrollableContainer.scrollTop = topPosition;
     }
 
+    update() {
+        this._setRenderableBatches();
+        this._checkForDig();
+    }
+
     componentDidMount() {
         this._setRenderableBatches();
     }
@@ -184,8 +183,11 @@ class ListView extends Component {
         let loadingComponent = this.state.isLoading && this.props.loadingComponent ? this.props.loadingComponent() : null;
 
         return (
-            <div style={this.props.style} ref={div => this.scrollableContainer = div} onScroll={this._onScroll}>
-                <div ref={div => this.batchedComponentsContainer = div}>
+            <div
+                style={this.props.style}
+                ref={div => (this.scrollableContainer = this.props.scrollableContainer || div)}
+                onScroll={this._onScroll}>
+                <div ref={div => (this.batchedComponentsContainer = div)}>
                     {batchedComponents}
                 </div>
                 {loadingComponent}

@@ -2155,15 +2155,9 @@ var ListView = function (_Component) {
             }
         }
     }, {
-        key: "_update",
-        value: function _update() {
-            this._setRenderableBatches();
-            this._checkForDig();
-        }
-    }, {
         key: "_onScroll",
         value: function _onScroll() {
-            this._update();
+            this.update();
         }
 
         /**
@@ -2214,6 +2208,12 @@ var ListView = function (_Component) {
             this.scrollableContainer.scrollTop = topPosition;
         }
     }, {
+        key: "update",
+        value: function update() {
+            this._setRenderableBatches();
+            this._checkForDig();
+        }
+    }, {
         key: "componentDidMount",
         value: function componentDidMount() {
             this._setRenderableBatches();
@@ -2237,9 +2237,12 @@ var ListView = function (_Component) {
 
             return _react2.default.createElement(
                 "div",
-                { style: this.props.style, ref: function ref(div) {
-                        return _this5.scrollableContainer = div;
-                    }, onScroll: this._onScroll },
+                {
+                    style: this.props.style,
+                    ref: function ref(div) {
+                        return _this5.scrollableContainer = _this5.props.scrollableContainer || div;
+                    },
+                    onScroll: this._onScroll },
                 _react2.default.createElement(
                     "div",
                     { ref: function ref(div) {
