@@ -2018,7 +2018,7 @@ var ListView = function (_Component) {
         _this.state = {
             firstBatchIndex: 0,
             lastBatchIndex: 0,
-            isLoading: false
+            isLoading: true
         };
 
         _this._onEndReachedThreshold = props.onEndReachedThreshold || DEFAULT_ON_END_REACHED_THRESHOLD;

@@ -10,7 +10,7 @@ class ListView extends Component {
         this.state = {
             firstBatchIndex: 0,
             lastBatchIndex: 0,
-            isLoading: false
+            isLoading: true
         };
 
         this._onEndReachedThreshold = props.onEndReachedThreshold || DEFAULT_ON_END_REACHED_THRESHOLD;
@@ -187,9 +187,7 @@ class ListView extends Component {
                 style={this.props.style}
                 ref={div => (this.scrollableContainer = this.props.scrollableContainer || div)}
                 onScroll={this._onScroll}>
-                <div ref={div => (this.batchedComponentsContainer = div)}>
-                    {batchedComponents}
-                </div>
+                <div ref={div => (this.batchedComponentsContainer = div)}>{batchedComponents}</div>
                 {loadingComponent}
             </div>
         );
